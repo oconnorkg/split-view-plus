@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Split View: Open Left Pane Links in Right Pane",
+  "version": "1.0.0",
+  "description": "When using Chrome's native Split View, clicking a link in the left pane opens it in the right pane.",
+  "permissions": ["tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
