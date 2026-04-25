@@ -42,12 +42,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendResponse({ ok: false, reason: "no_split_partner" });
       return;
     }
-	
-	// only open link in tab on the right half of the split
-	if (other.index < freshSenderTab.index) {
-		sendResponse({ ok: false, reason: "not_left_split" });
-		return;
-	}
 
     try {
       // Update other pane without stealing focus

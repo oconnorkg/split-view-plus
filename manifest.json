@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Split View: Open Left Pane Links in Right Pane",
-  "version": "1.0.0",
-  "description": "When using Chrome's native Split View, clicking a link in the left pane opens it in the right pane.",
-  "permissions": ["tabs"],
+  "name": "Split View: Open Links in Other Pane",
+  "version": "1.1.0",
+  "description": "When in Chrome Split View, clicking a link opens it in the other split pane tab (uses splitViewId when available).",
+  "permissions": ["tabs", "storage"],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js" },
   "content_scripts": [
@@ -12,5 +12,14 @@
       "js": ["content.js"],
       "run_at": "document_start"
     }
-  ]
+  ],
+  "commands": {
+    "toggle-enabled": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Enable/disable redirecting clicks to the other pane"
+    }
+  }
 }
