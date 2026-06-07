@@ -13,11 +13,13 @@ function isPlainLeftClick(e) {
 
 function ignoreHref(href) {
   if (!href) return true;
+  if (href == "#") return true; // common dummy href
   const lower = href.toLowerCase();
   return (
     lower.startsWith("javascript:") ||
     lower.startsWith("mailto:") ||
-    lower.startsWith("tel:")
+    lower.startsWith("tel:") ||
+    lower.endsWith("/#")  // common dummy href
   );
 }
 
@@ -28,6 +30,8 @@ document.addEventListener(
 
     const a = e.target?.closest?.("a[href]");
     if (!a) return;
+
+    //console.log("Clicked URL:", a.href);
 
     const url = a.href;
     if (ignoreHref(url)) return;
