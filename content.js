@@ -1,14 +1,18 @@
 /* global chrome */
 
+let suppressNextClick = false;
+
 function isPlainLeftClick(e) {
   return (
     e.button === 0 &&
     !e.defaultPrevented &&
-    !e.metaKey &&
-    !e.ctrlKey &&
     !e.shiftKey &&
     !e.altKey
   );
+}
+
+function getLink(e) {
+  return e.target?.closest?.("a[href]");
 }
 
 function ignoreHref(href) {
@@ -23,8 +27,15 @@ function ignoreHref(href) {
   );
 }
 
+function send(type, url) {
+  chrome.runtime.sendMessage({ type, url }, (res) => {
+    if (!res?.ok) window.location.assign(url);
+  });
+}
+
+// Ctrl/Cmd-click: intercept BEFORE Chrome opens a new tab
 document.addEventListener(
-  "click",
+  "mousedown",
   (e) => {
     if (!isPlainLeftClick(e)) return;
 
@@ -44,7 +55,7 @@ document.addEventListener(
     (async () => {
       try {
         const res = await chrome.runtime.sendMessage({
-          type: "OPEN_IN_OTHER_PANE",
+          type: e.ctrlKey || e.metaKey ? "OPEN_IN_SAME_PANE" : "OPEN_IN_OTHER_PANE",
           url
         });
 
@@ -52,11 +63,26 @@ document.addEventListener(
         if (!res?.ok) {
           window.location.assign(url);
         }
+        else
+          suppressNextClick = true; // suppress the upcoming click event, since we've already handled it.
       } catch {
         // If messaging fails (e.g. restricted page), fall back to normal nav here.
         window.location.assign(url);
       }
     })();
+  },
+  true
+);
+
+document.addEventListener(
+  "click",
+  (e) => {
+    if (suppressNextClick) {
+      suppressNextClick = false;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return;
+    }
   },
   true // capture
 );

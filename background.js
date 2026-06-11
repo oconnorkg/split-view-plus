@@ -2,7 +2,9 @@
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
-    if (msg?.type !== "OPEN_IN_OTHER_PANE") {
+    const samePane = msg.type === "OPEN_IN_SAME_PANE";
+
+    if (!samePane && msg?.type !== "OPEN_IN_OTHER_PANE") {
       sendResponse({ ok: false, reason: "unknown_message" });
       return;
     }
@@ -35,12 +37,21 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       (t) => t.id && t.id !== freshSenderTab.id && t.splitViewId === splitViewId
     );
 
-    const targetTabId = other?.id ?? null;
+    targetTabId = other?.id ?? null;
 
     // Small improvement: if partner missing (split view ended / tab closed), don't hijack
     if (!targetTabId) {
       sendResponse({ ok: false, reason: "no_split_partner" });
       return;
+    }
+
+    if (targetTabId < freshSenderTab.id) {
+      sendResponse({ ok: false, reason: "target_not_right_view" });
+      return;
+    }
+
+    if (samePane) {
+      targetTabId = freshSenderTab.id;
     }
 
     try {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Split View: Open Links in Other Pane",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "When in Chrome Split View, clicking a link opens it in the other split pane tab (uses splitViewId when available).",
   "permissions": ["tabs" ],
   "host_permissions": ["<all_urls>"],
